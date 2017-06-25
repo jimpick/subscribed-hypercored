@@ -4,6 +4,8 @@
   "description": "A daemon that can download and share multiple hypercores and hyperdrives",
   "main": "index.js",
   "dependencies": {
+    "dat-node": "^3.5.0",
+    "dotenv": "^4.0.0",
     "hypercore-archiver": "^4.1.0",
     "minimist": "^1.2.0",
     "pump": "^1.0.2",

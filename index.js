@@ -18,6 +18,15 @@ var server = http.createServer()
 var port = argv.port || process.env.PORT || 0
 var unencryptedWebsockets = !!argv['unencrypted-websockets']
 
+var Dat = require('dat-node')
+require('dotenv').config({ silent: true })
+const feedKey = process.env.FEED_KEY
+if (!feedKey) {
+  console.error('Please set the FEED_KEY environment variable or use .env')
+  process.exit(1)
+}
+console.log('Master feed key is', feedKey)
+
 if (argv.help) {
   console.log(
     'Usage: hypercored [key?] [options]\n\n' +
@@ -48,7 +57,7 @@ ar.on('changes', function (feed) {
   console.log('Archiver key is ' + feed.key.toString('hex'))
 })
 
-console.log('Watching %s for a list of active feeds', path.join(cwd, 'feeds'))
+console.log('Watching %s for a list of active feeds', feedKey)
 
 wss.createServer({server: server}, onwebsocket)
 server.on('request', function (req, res) {
@@ -71,6 +80,45 @@ swarm(ar).on('listening', function () {
   }
 })
 
+Dat('./dat-master-feed', {
+  // 2. Tell Dat what link I want
+  key: 'ac0d1207eee52a9b8258dd731dee09ca775cc865d76f39d0d6f19a0f4e976354',
+   // (a 64 character hash from above)
+  temp: true,
+  sparse: true
+}, function (err, dat) {
+  if (err) throw err
+
+  // 3. Join the network & download (files are automatically downloaded)
+  dat.joinNetwork()
+
+  dat.archive.on('update', () => {
+    console.log('Feed update version', dat.archive.version)
+    dat.archive.readFile('/feeds', function (err, content) {
+      // console.log(content.toString()) // prints cat-locations.txt file!
+      var feeds = content.toString().trim().split('\n')
+        .filter(function (line) {
+          return /^(dat:)?(\/\/)?[0-9a-f]{64}(\/.*)?$/i.test(line.trim())
+        })
+        .map(function (line) {
+          return line.trim().split('//').pop().split('/')[0]
+        })
+
+      ar.list(function (err, keys) {
+        if (err || !ar.changes.writable) return
+
+        var i = 0
+
+        for (i = 0; i < keys.length; i++) {
+          if (feeds.indexOf(keys[i].toString('hex')) === -1) ar.remove(keys[i])
+        }
+        for (i = 0; i < feeds.length; i++) {
+          ar.add(feeds[i])
+        }
+      })
+    })
+  })
+})
 readFile(path.join(cwd, 'feeds'), function (file) {
   var feeds = file.toString().trim().split('\n')
     .filter(function (line) {
