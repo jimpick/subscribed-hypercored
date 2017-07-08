@@ -27,6 +27,15 @@ if (!feedKey) {
 }
 console.log('Master feed key is', feedKey)
 
+if (process.env.MAX_LISTENERS) {
+  const maxListeners = parseInt(process.env.MAX_LISTENERS, 10)
+  if (maxListeners) {
+    require('events').EventEmitter.defaultMaxListeners =
+      parseInt(process.env.MAX_LISTENERS, 10)
+    console.log('Set EventEmitter.defaultMaxListeners to', maxListeners)
+  }
+}
+
 if (argv.help) {
   console.log(
     'Usage: hypercored [key?] [options]\n\n' +
