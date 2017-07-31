@@ -1,6 +1,6 @@
 {
   "name": "subscribed-hypercored",
-  "version": "1.2.3-pre.2",
+  "version": "1.2.3-pre.3",
   "description": "A daemon that can download and share multiple hypercores and hyperdrives from a master feed",
   "main": "index.js",
   "dependencies": {

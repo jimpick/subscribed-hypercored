@@ -91,7 +91,7 @@ swarm(ar).on('listening', function () {
 
 Dat('./dat-master-feed', {
   // 2. Tell Dat what link I want
-  key: 'ac0d1207eee52a9b8258dd731dee09ca775cc865d76f39d0d6f19a0f4e976354',
+  key: feedKey,
    // (a 64 character hash from above)
   temp: true,
   sparse: true
