@@ -22,6 +22,17 @@ var unencryptedWebsockets = !!argv['unencrypted-websockets']
 var Dat = require('dat-node')
 require('dotenv').config({ silent: true })
 
+if (argv.help) {
+  console.log(
+    'Usage: subscribed-hypercored [key?] [options]\n\n' +
+    '  --cwd         [folder to run in]\n' +
+    '  --websockets  [share over websockets as well]\n' +
+    '  --port        [explicit websocket port]\n' +
+    '  --no-swarm    [disable swarming]\n'
+  )
+  process.exit(0)
+}
+
 async function run () {
 
   const feedKey = process.env.FEED_KEY
@@ -42,16 +53,6 @@ async function run () {
         parseInt(process.env.MAX_LISTENERS, 10)
       console.log('Set EventEmitter.defaultMaxListeners to', maxListeners)
     }
-  }
-
-  if (argv.help) {
-    console.log(
-      'Usage: hypercored [key?] [options]\n\n' +
-      '  --cwd         [folder to run in]\n' +
-      '  --websockets  [share over websockets as well]\n' +
-      '  --port        [explicit websocket port]\n'
-    )
-    process.exit(0)
   }
 
   if (unencryptedWebsockets) {
@@ -85,18 +86,17 @@ async function run () {
     }))
   })
 
-  swarm(ar).on('listening', function () {
-    var self = this
+  if (argv.swarm !== false) {
+    swarm(ar, {live: true}).on('listening', function () {
+      console.log('Swarm listening on port %d', this.address().port)
+    })    
+  }
 
-    if (argv.websockets) server.listen(port, onlisten)
-    else onlisten()
-
-    function onlisten () {
-      console.log('Swarm listening on port %d', self.address().port)
-      if (argv.websockets) console.log('WebSocket server listening on port %d', server.address().port)
-    }
-  })
-
+  if (argv.websockets === true) {
+    server.listen(port, function () {
+      console.log('WebSocket server listening on port %d', server.address().port)
+    })
+  }
 
   Dat('./dat-master-feed', {
     // 2. Tell Dat what link I want
@@ -140,7 +140,6 @@ async function run () {
       })
     })
   })
-
 }
 
 function resolveAll (links, cb) {
@@ -158,7 +157,7 @@ function resolveAll (links, cb) {
 }
 
 function onwebsocket (stream) {
-  pump(stream, ar.replicate({encrypt: !unencryptedWebsockets}), stream)
+  pump(stream, ar.replicate({live: true, encrypt: !unencryptedWebsockets}), stream)
 }
 
 run()

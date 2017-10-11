@@ -27,6 +27,15 @@ Run it:
 subscribed-hypercored
 ```
 
+```
+Usage: subscribed-hypercored [key?] [options]
+
+    --cwd         [folder to run in]
+    --websockets  [share over websockets as well]
+    --port        [explicit websocket port]
+    --no-swarm    [disable swarming]
+```
+
 For more info on how to run hypercored:
 
 https://docs.datproject.org/server
