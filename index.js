@@ -114,6 +114,10 @@ async function run () {
       console.log('Feed update version', dat.archive.version)
       dat.archive.readFile('/feeds', function (err, content) {
         // console.log(content.toString()) // prints cat-locations.txt file!
+        if (!content) {
+          // Not sure why it does this
+          return
+        }
         var unresolvedFeeds = content.toString().trim().split('\n')
         resolveAll(unresolvedFeeds, (err, feeds) => {
           feeds
