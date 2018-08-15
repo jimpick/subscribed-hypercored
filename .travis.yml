@@ -18,4 +18,4 @@ deploy:
   on:
     repo: jimpick/subscribed-hypercored
     node: '10'
-tags: false
+tags: true
