@@ -14,13 +14,16 @@
     "websocket-stream": "^5.0.1"
   },
   "devDependencies": {
+    "cross-zip-cli": "^1.0.0",
     "standard": "^10.0.3"
   },
   "bin": {
     "subscribed-hypercored": "./index.js"
   },
   "scripts": {
-    "test": "standard"
+    "test": "standard",
+    "package": "rm -rf builds && npm run pkg && ./package.sh",
+    "pkg": "pkg package.json -o builds/hypercored"
   },
   "repository": {
     "type": "git",
@@ -31,5 +34,15 @@
   "bugs": {
     "url": "https://github.com/jimpick/subscribed-hypercored/issues"
   },
-  "homepage": "https://github.com/jimpick/subscribed-hypercored"
+  "homepage": "https://github.com/jimpick/subscribed-hypercored",
+  "pkg": {
+    "assets": [
+      "./node_modules/utp-native/prebuilds/**",
+      "./node_modules/blake2b-wasm/blake2b.wasm",
+      "./node_modules/siphash24/siphash24.wasm"
+    ],
+    "targets": [
+      "node10-linux-x64"
+    ]
+  }
 }
