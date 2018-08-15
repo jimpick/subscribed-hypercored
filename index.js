@@ -6,7 +6,7 @@ var datDns = require('dat-dns')()
 var wss = require('websocket-stream')
 var archiver = require('hypercore-archiver')
 var swarm = require('hypercore-archiver/swarm')
-var readFile = require('read-file-live')
+// var readFile = require('read-file-live')
 var minimist = require('minimist')
 var path = require('path')
 var pump = require('pump')
@@ -34,7 +34,6 @@ if (argv.help) {
 }
 
 async function run () {
-
   const feedKey = process.env.FEED_KEY
   if (!feedKey) {
     console.error('Please set the FEED_KEY environment variable or use .env')
@@ -89,7 +88,7 @@ async function run () {
   if (argv.swarm !== false) {
     swarm(ar, {live: true}).on('listening', function () {
       console.log('Swarm listening on port %d', this.address().port)
-    })    
+    })
   }
 
   if (argv.websockets === true) {
@@ -101,7 +100,7 @@ async function run () {
   Dat('./dat-master-feed', {
     // 2. Tell Dat what link I want
     key: resolvedFeedKey,
-     // (a 64 character hash from above)
+    // (a 64 character hash from above)
     temp: true,
     sparse: true
   }, function (err, dat) {
@@ -113,6 +112,7 @@ async function run () {
     dat.archive.on('update', () => {
       console.log('Feed update version', dat.archive.version)
       dat.archive.readFile('/feeds', function (err, content) {
+        if (err) return console.error(err)
         // console.log(content.toString()) // prints cat-locations.txt file!
         if (!content) {
           // Not sure why it does this
@@ -120,6 +120,7 @@ async function run () {
         }
         var unresolvedFeeds = content.toString().trim().split('\n')
         resolveAll(unresolvedFeeds, (err, feeds) => {
+          if (err) return console.error(err)
           feeds
             .filter(function (line) {
               return /^(dat:)?(\/\/)?[0-9a-f]{64}(\/.*)?$/i.test(line.trim())
@@ -165,4 +166,3 @@ function onwebsocket (stream) {
 }
 
 run()
-
