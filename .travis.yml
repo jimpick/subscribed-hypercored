@@ -1,0 +1,21 @@
+language: node_js
+
+node_js:
+  - '10'
+sudo: false
+
+script:
+  - npm test
+
+before_deploy: npm run package
+deploy:
+  provider: releases
+  api_key:
+    secure: GF+Ehh9kDu2m+KqSzciZRQmUfubnVGDEfxZKVX+psesKoxxDSq8/wkl7g1yR2H8DO0dg3lW8opbsKbfOOUWztyIfFxFukgwKIawUd7Krtr4XQLyywq49NdYARKP6bSxeEb8N3xVTo5fuq104KT0mMUB9di/iunsO/ITOzbCZyWE=
+  skip_cleanup: true
+  file_glob: true
+  file: dist/*
+  on:
+    repo: jimpick/subscribed-hypercored
+    node: '10'
+tags: false
