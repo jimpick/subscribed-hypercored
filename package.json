@@ -15,6 +15,7 @@
   },
   "devDependencies": {
     "cross-zip-cli": "^1.0.0",
+    "pkg": "^4.3.4",
     "standard": "^10.0.3"
   },
   "bin": {
