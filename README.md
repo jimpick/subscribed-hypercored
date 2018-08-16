@@ -11,9 +11,23 @@ archives. So you can easily control a fleet of hypercored servers to back up all
 
 ![Animated demo](subscribed-hypercored.gif)
 
+## Installation
+
+via npm:
+
 ```
 npm install -g subscribed-hypercored
 ```
+
+No npm? Download the binary:
+
+```
+wget -qO- https://raw.githubusercontent.com/jimpick/subscribed-hypercored/master/download.sh | bash
+```
+
+If you are unable to use `npm`, use the binary distribution. The binary includes a copy of node and subscribed-hypercored packaged inside a single file, so you just have to download one file, with no other dependencies needed on your system.
+
+## Usage
 
 Set up a `.env`:
 
